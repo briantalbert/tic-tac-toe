@@ -1,0 +1,28 @@
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 5px;
+    width: 320px;
+}
+
+.square {
+    display: flex;
+    position: relative;
+    width: 100px;
+    height: 100px;
+    background-color: cadetblue;
+    box-shadow: 3px 3px 3px lightseagreen;
+    border-radius: 5px;
+    justify-content: center;
+    align-items: center;
+    font-size: 72px;
+    color: burlywood;
+    font-family: Arial, Helvetica, sans-serif; 
+}
+
+.clicked {
+    left: 3px;
+    top: 3px;
+    box-shadow: none;
+}
