@@ -43,6 +43,7 @@ const Game = (function() {
 const GameBoard = (function() {
     const players = Game.players
     var currentPlayer = Game.nextPlayer()
+    const footerText = document.querySelector('.footer-text')
 
     var board = [['','',''],
                  ['','',''],
@@ -59,16 +60,13 @@ const GameBoard = (function() {
 
                 gameSquare.addEventListener('mousedown', () => {
                     gameSquare.classList.add('clicked')
+                    footerText.textContent = ''
                     if (gameSquare.textContent == '') {
                         updateBoard(gameSquare, currentPlayer.letter)
-                        //updateBoard(gameSquare.getAttribute('data-row'), gameSquare.getAttribute('data-col'), currentPlayer.letter) //begin with GameBoard.?
-                        //gameSquare.textContent = currentPlayer.letter
                         if (!(Game.gameOver(board))) {
                             currentPlayer = Game.nextPlayer()
                         } else {
-                            const footerText = document.querySelector('.footer-text')
-                            //alert(footerText)
-                            footerText.textContent = currentPlayer.name + " wins!"
+                            footerText.textContent = "Game over! " + currentPlayer.name + " wins!"
                         }
                     }
                 })
