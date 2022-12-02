@@ -47,7 +47,27 @@ const GameBoard = (function() {
 
     var board = [['','',''],
                  ['','',''],
-                 ['','','']]
+                 ['','','']];
+    
+    const addEventToSquare = (gameSquare) => {
+        gameSquare.addEventListener('mousedown', () => {
+            gameSquare.classList.add('clicked')
+            footerText.textContent = ''
+            if (gameSquare.textContent == '') {
+                updateBoard(gameSquare, currentPlayer.letter)
+                if (!(Game.gameOver(board))) {
+                    currentPlayer = Game.nextPlayer()
+                    footerText.textContent = currentPlayer.name + "'s turn!"
+                } else {
+                    footerText.textContent = "Game over! " + currentPlayer.name + " wins!"
+                }
+            }
+        })
+
+        gameSquare.addEventListener('mouseup', () => {
+            gameSquare.classList.remove('clicked')
+        })
+    }
 
     const makeBoard = (function() {
         boardDiv = document.querySelector('.board')
@@ -58,22 +78,8 @@ const GameBoard = (function() {
                 gameSquare.setAttribute('data-col', j)
                 gameSquare.classList.add('square')
 
-                gameSquare.addEventListener('mousedown', () => {
-                    gameSquare.classList.add('clicked')
-                    footerText.textContent = ''
-                    if (gameSquare.textContent == '') {
-                        updateBoard(gameSquare, currentPlayer.letter)
-                        if (!(Game.gameOver(board))) {
-                            currentPlayer = Game.nextPlayer()
-                        } else {
-                            footerText.textContent = "Game over! " + currentPlayer.name + " wins!"
-                        }
-                    }
-                })
-
-                gameSquare.addEventListener('mouseup', () => {
-                    gameSquare.classList.remove('clicked')
-                })
+                addEventToSquare(gameSquare)
+                
                 boardDiv.appendChild(gameSquare)
             }
         }

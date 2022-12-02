@@ -21,7 +21,7 @@
     grid-column: 2 / 3;
     background-color: cadetblue;
     justify-self: start;
-    width: 50%;
+    width: max(50%, 30vw);
     height: auto;
     border-radius: 10px;
     color: burlywood;
