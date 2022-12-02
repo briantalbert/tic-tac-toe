@@ -28,14 +28,17 @@
                         <label for="numPlayers">Play vs computer?</label>
                         <input type="checkbox" name="numPlayers" id="numPlayers">
                     </li>
-<!--                     <li>
+                    <li>
                         <div class="difficulty">
-                            <input type="radio" name="difficulty" id="easy">
-                            <label for="easy">Easy</label>
-                            <input type="radio" name="difficulty" id="hard">
-                            <label for="hard">Hard</label>
+                            <label for="difficulty">Select difficulty:</label>
+                            <select name="difficulty" id="diffSelect">
+                                <optgroup label="Difficulty">
+                                    <option value="easy">Easy</option>
+                                    <option value="hard">Hard</option>
+                                </optgroup>
+                            </select>
                         </div>
-                    </li> -->
+                    </li>
                     <li>
                         <div class="buttons">
                             <button id="begin">Begin Game</button>
