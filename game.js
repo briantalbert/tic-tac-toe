@@ -75,6 +75,7 @@ const Game = (function() {
 const GameBoard = (function() {
     let players = []
     var currentPlayer
+    let gameStarted = false
     const footerText = document.querySelector('.footer-text')
 
     var board = [['','',''],
@@ -83,6 +84,11 @@ const GameBoard = (function() {
     
     const addEventToSquare = (gameSquare) => {
         gameSquare.addEventListener('mousedown', () => {
+            if (!(gameStarted)) {
+                players = Game.createPlayers()
+                currentPlayer = players[0]
+                gameStarted = true
+            }
             gameSquare.classList.add('clicked')
             footerText.textContent = ''
             if (gameSquare.textContent == '') {
@@ -118,7 +124,7 @@ const GameBoard = (function() {
                 boardDiv.appendChild(gameSquare)
             }
         }
-    })//();
+    })
     
     const updateBoard = (gameSquare, letter) => {
         board[gameSquare.getAttribute('data-row')][gameSquare.getAttribute('data-col')] = letter;
@@ -145,6 +151,7 @@ const GameBoard = (function() {
             players = Game.createPlayers()
             currentPlayer = players[0]
             footerText.textContent = currentPlayer.name + "'s turn!"
+            gameStarted = true
         })
         makeBoard()
         
