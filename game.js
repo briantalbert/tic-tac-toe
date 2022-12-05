@@ -20,25 +20,47 @@ const Game = (function() {
     var playerIdx = 0
 
     //check for win condition
-    const gameOver = (board) => {
+    const gameOver = () => {
+        let board = GameBoard.getBoard()
         if (board[0][0] != '' && board[0][0] == board[1][0] && board[1][0] == board[2][0] ||
             board[0][1] != '' && board[0][1] == board[1][1] && board[1][1] == board[2][1] ||
             board[0][2] != '' && board[0][2] == board[1][2] && board[1][2] == board[2][2]) {
                 //vertical column 3 in a row
+                GameBoard.disableSquares()
                 return true
         } else if (board[0][0] != '' && board[0][0] == board[0][1] && board[0][1] == board[0][2] ||
         board[1][0] != '' && board[1][0] == board[1][1] && board[1][1] == board[1][2] ||
         board[2][0] != '' && board[2][0] == board[2][1] && board[2][1] == board[2][2]) {
             //horizontal row 3 in a row
+            GameBoard.disableSquares()
             return true
         } else if (board[0][0] != '' && board[0][0] == board[1][1] && board[1][1] == board[2][2] ||
         board[0][2] != '' && board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
             //diagonal 3 in a row
+            GameBoard.disableSquares()
+            return true
+        } else if(isCat()) {
+
             return true
         } else {
             return false
         }
       
+    }
+
+    const isCat = () => {
+        var empties = []
+        squares = document.querySelectorAll('.square')
+        squares.forEach(square => {
+            if (square.textContent == '') {
+                empties.push(square)
+            }
+        })
+        if (empties.length == 0) {
+            GameBoard.disableSquares()
+            return true
+        }
+        return false
     }
 
     const compTurn = (compPlayer) => {
@@ -50,11 +72,13 @@ const Game = (function() {
             }
         })
 
+        
         if (empties.length > 0) {
             chosenSquare = empties[Math.floor(Math.random() * empties.length)]
             GameBoard.updateBoard(chosenSquare, compPlayer.letter)
         } else {
             GameBoard.footerText.textContent = 'Game over! Cat game!'
+            GameBoard.disableSquares()
         }
     };
     
@@ -64,12 +88,20 @@ const Game = (function() {
         next = players[playerIdx]
         if (next.type == 'comp') {
             compTurn(next)
-            nextPlayer(players)
+            if (!(gameOver())) {
+                nextPlayer(players)
+            } else if(isCat()) {
+                GameBoard.footerText.textContent = "Game over! Cat game!"
+            } else {
+                GameBoard.footerText.textContent = "Game over! " + next.name + " wins!"
+                GameBoard.disableSquares()
+                return
+            }
         }
         return next
     }
 
-    return {gameOver, createPlayers, nextPlayer}
+    return {gameOver, createPlayers, nextPlayer, isCat}
 })();
 
 const GameBoard = (function() {
@@ -84,20 +116,25 @@ const GameBoard = (function() {
     
     const addEventToSquare = (gameSquare) => {
         gameSquare.addEventListener('mousedown', () => {
-            if (!(gameStarted)) {
-                players = Game.createPlayers()
-                currentPlayer = players[0]
-                gameStarted = true
-            }
-            gameSquare.classList.add('clicked')
-            footerText.textContent = ''
-            if (gameSquare.textContent == '') {
-                updateBoard(gameSquare, currentPlayer.letter)
-                if (!(Game.gameOver(board))) {
+            if (gameSquare.classList.contains('active')) {
+                if (!(gameStarted)) {
+                    players = Game.createPlayers()
+                    currentPlayer = players[0]
+                    gameStarted = true
+                }
+                gameSquare.classList.add('clicked')
+                footerText.textContent = ''
+                if (gameSquare.textContent == '') {
+                    updateBoard(gameSquare, currentPlayer.letter)
                     currentPlayer = Game.nextPlayer(players)
-                    footerText.textContent = currentPlayer.name + "'s turn!"
-                } else {
-                    footerText.textContent = "Game over! " + currentPlayer.name + " wins!"
+                    if (!(Game.gameOver(board))) {
+                        footerText.textContent = currentPlayer.name + "'s turn!"
+                    } else if (Game.isCat()){
+                        footerText.textContent = "Game over! Cat game!"
+                        disableSquares()
+                    } else {
+                        footerText.textContent = "Game over! " + currentPlayer.name + " wins!"
+                    }
                 }
             }
         })
@@ -116,6 +153,7 @@ const GameBoard = (function() {
                 gameSquare.setAttribute('data-row', i)     
                 gameSquare.setAttribute('data-col', j)
                 gameSquare.classList.add('square')
+                gameSquare.classList.add('active')
 
                 //add click events to squares
                 addEventToSquare(gameSquare)
@@ -135,12 +173,10 @@ const GameBoard = (function() {
         return board;
     }
 
-    const resetBoard = () => {
+    const disableSquares = () => {
         let squares = document.querySelectorAll('.square')
         squares.forEach(box => {
-            console.log(box)
-            box.textContent = ''
-            GameBoard.updateBoard(box, '')
+            box.classList.remove('active')
         });
     }
 
@@ -159,6 +195,6 @@ const GameBoard = (function() {
 
     
 
-    return {updateBoard, getBoard, resetBoard, players}
+    return {updateBoard, getBoard, disableSquares, players, footerText}
     
 })();
