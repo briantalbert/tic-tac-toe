@@ -63,6 +63,82 @@ const Game = (function() {
         return false
     }
 
+    const getBlockable = (empties, player) => {
+        const board = GameBoard.getBoard()
+        var wins = []
+        var blocks = []
+        empties.forEach(square => {
+            let row = parseInt(square.getAttribute('data-row'), 10)
+            let col = parseInt(square.getAttribute('data-col'), 10)
+
+            //checking diagonals
+            if (row == 0 && col == 2) {
+                if (board[1][1] == board[2][0] && board[1][1] != '') {
+                    if (board[1][1] == player.letter) {
+                        wins.push(square)
+                    } else {
+                        blocks.push(square)
+                    }
+                }
+            }
+
+            if (row == 2 && col == 0) {
+                if (board[1][1] == board[0][2] && board[1][1] != '') {
+                    if (board[1][1] == player.letter) {
+                        wins.push(square)
+                    } else {
+                        blocks.push(square)
+                    }
+                }
+            }
+
+            if (row ==1 && col == 1) {
+                if (board[0][0] == board[2][2] && board[0][0] != '') {
+                    if (board[0][0] == player.letter) {
+                        wins.push(square)
+                    } else {
+                        blocks.push(square)
+                    }
+                }
+            }
+
+            if ((row == 0 && col == 0) || row == 1 && col == 1 || row == 2 && col == 2) {
+                if (board[(row + 1) % 3][(col + 1) % 3] == board[(row + 2) % 3][(col + 2) % 3] && board[(row + 1) % 3][(col + 1) % 3] != '') {
+                    if (board[(row + 1) % 3][(col + 1) % 3] == player.letter) {
+                        wins.push(square)
+                    } else {
+                        blocks.push(square)
+                    }
+                }
+            }
+
+            //checking horizontal & vertical
+            if (board[row][(col + 1) % 3] == board[row][(col + 2) % 3] && board[row][(col + 1) % 3] != '') {
+                if (board[row][(col + 1) % 3] == player.letter) {
+                    wins.push(square)
+                } else {
+                    blocks.push(square)
+                }
+            }else if (board[(row + 1) % 3][col] == board[(row + 2) % 3][col] && board[(row + 1) % 3][col] != '') {
+                if (board[(row + 1) % 3][col] == player.letter) {
+                    wins.push(square)
+                } else {
+                    blocks.push(square)
+                }
+            }
+    
+        });
+
+        if (wins.length > 0) {
+            return wins
+        } else if (blocks.length > 0) {
+            return blocks
+        } else {
+            return empties
+        }
+
+    }
+
     const compTurn = (compPlayer) => {
         var empties = []
         squares = document.querySelectorAll('.square')
@@ -72,13 +148,24 @@ const Game = (function() {
             }
         })
 
-        
-        if (empties.length > 0) {
-            chosenSquare = empties[Math.floor(Math.random() * empties.length)]
-            GameBoard.updateBoard(chosenSquare, compPlayer.letter)
-        } else {
-            GameBoard.footerText.textContent = 'Game over! Cat game!'
-            GameBoard.disableSquares()
+        let diff = document.querySelector("#diffSelect").value
+        if (diff == 'easy') {
+            if (empties.length > 0) {
+                let chosenSquare = empties[Math.floor(Math.random() * empties.length)]
+                GameBoard.updateBoard(chosenSquare, compPlayer.letter)
+            } else {
+                GameBoard.footerText.textContent = 'Game over! Cat game!'
+                GameBoard.disableSquares()
+            }
+        } else if (diff == 'hard') {
+            let options = getBlockable(empties, compPlayer)
+            if (options.length > 0) {
+                let chosenSquare = options[Math.floor(Math.random() * options.length)]
+                GameBoard.updateBoard(chosenSquare, compPlayer.letter)
+            } else {
+                GameBoard.footerText.textContent = 'Game over! Cat game!'
+                GameBoard.disableSquares()
+            }
         }
     };
     
