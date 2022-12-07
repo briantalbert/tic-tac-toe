@@ -54,15 +54,15 @@ const Game = (function() {
         } 
     }
 
-    const getBestMove = (empties, player) => {
+    const getBestMove = (player) => {
         //looks at all empty squares to see if it is possible to
         //win or to block the other player from winning. if neither
         //of those is possible, selects random empty square. 
         
+        let empties = GameBoard.getEmptySquares()
         const board = GameBoard.getBoard()
         var wins = []
         var blocks = []
-        var centerSquare
 
         empties.forEach(square => {
             let row = parseInt(square.getAttribute('data-row'), 10)
@@ -105,10 +105,6 @@ const Game = (function() {
                         blocks.push(square)
                     }
                 }
-
-                if (board[1][1] == ''){
-                    centerSquare = square
-                }
             }
 
             if (row == 0 && col == 0) {
@@ -144,8 +140,6 @@ const Game = (function() {
             return wins[Math.floor(Math.random() * wins.length)]
         } else if (blocks.length > 0) {
             return blocks[Math.floor(Math.random() * blocks.length)]
-        } else if (centerSquare) {
-            return centerSquare
         } else {
             return empties[Math.floor(Math.random() * empties.length)]
         }
@@ -158,7 +152,7 @@ const Game = (function() {
                 return empties[Math.floor(Math.random() * empties.length)]
                 break;
             case 'hard':
-                let choice = getBestMove(empties, player)
+                let choice = getBestMove(player)
                 return choice
                 break;
         }
@@ -268,8 +262,6 @@ const GameBoard = (function() {
                 if (updateBoard(gameSquare, currentPlayer)) {
                     currentPlayer = Game.nextPlayer(currentPlayer)
                 }
-            } else {
-                footerText.textContent = "Press 'Begin' to start a new game!"
             }
         })
 
@@ -283,7 +275,6 @@ const GameBoard = (function() {
         startButton = document.querySelector('#begin')
         startButton.addEventListener('click', (e) => {
             e.preventDefault()
-            footerText.textContent = "Welcome to the Merry Game of Toes!"
             players = Game.createPlayers()
             currentPlayer = players[0]
             enableSquares()
